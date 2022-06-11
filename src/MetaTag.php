@@ -8,14 +8,12 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 
 /**
- * MetaTag class
- * 
- * Установить MetaTag на страницу
+ * Install Meta Tags on the page
  * 
  * @author Denisok94
  * @link https://developers.facebook.com/tools/debug/
  *  
- * @example Пример:
+ * @example
  * ```php
  * namespace app\controllers;
  * use \denisok94\helper\yii2\MetaTag;
