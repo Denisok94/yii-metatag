@@ -35,7 +35,7 @@ $config = [
 
 | Method | Description |
 |----------------|:----------------|
-| setTag | Install MetaTag on the page |
+| setTags | Install MetaTag on the page |
 
 ```php
 namespace app\controllers;
@@ -48,7 +48,7 @@ class NewsController extends Controller
     {
         $model = $this->findModel($id);
         //
-        (new MetaTag($this->view))->setTag([
+        (new MetaTag($this->view))->setTags([
             'title' => $model->title,
             'description' => substr($model->text, 0, 100),
             'keywords' => $model->tags, // string
@@ -56,7 +56,7 @@ class NewsController extends Controller
         // or
         $this->view->title = $model->title;
         $meta = new MetaTag($this->view, $model->image->url);
-        $meta->setTag([
+        $meta->setTags([
             'description' => $model->announce,
             'keywords' => implode(', ', $model->tags), // if tags array
         ]);
@@ -69,7 +69,7 @@ class NewsController extends Controller
 Указываются в `action`, перед `render()`.
 ```php
 $meta = new MetaTag($this->view);
-$meta->setTag([
+$meta->setTags([
     'nameTag1' => 'valueTag1',
     'nameTag2' => 'valueTag2',
     //...

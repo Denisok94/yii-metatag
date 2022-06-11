@@ -1,6 +1,6 @@
 <?php
 
-namespace denisok94\helper;
+namespace denisok94\helper\yii2;
 
 use Yii;
 use yii\web\View;
@@ -25,7 +25,7 @@ use yii\helpers\Html;
  *      {
  *          $model = $this->findModel($id);
  *          $meta = new MetaTag($this->view, $model->image->url);
- *          $meta->tag([
+ *          $meta->setTags([
  *              'title' => $model->title,
  *              'description' => substr($model->text, 0, 100),
  *              'keywords' => $model->tags, // string
@@ -44,17 +44,26 @@ class MetaTag
      */
     private $view;
 
-    private $defaultTag,
-        $title,
-        $language,
-        $name,
-        $domain,
-        $image,
-        $favicon;
+    /**
+     * @var array
+     */
+    private $defaultTag = [];
 
+    /**
+     * @var string|null
+     */
+    private $image, $favicon;
+
+    /**
+     * @var array
+     */
     private $twitterTag = [
         'title', 'description', 'url', 'domain', 'site', 'image', 'image:src', 'creator', 'card'
     ];
+
+    /**
+     * @var array
+     */
     private $ogTag = [
         'title', 'description', 'url', 'locale', 'type', 'image', 'image:src', 'image:type', 'image:width', 'image:height', 'site_name',
     ];
@@ -76,27 +85,27 @@ class MetaTag
 
     private function init()
     {
-        $this->title = isset($this->view->title) ? Html::encode($this->view->title) : Yii::$app->name;
-        $this->name = Yii::$app->name;
-        $this->language = Yii::$app->language ?? 'en-EN';
+        $title = isset($this->view->title) ? Html::encode($this->view->title) : Yii::$app->name;
+        $name = Yii::$app->name;
+        $language = Yii::$app->language ?? 'en-EN';
 
         if (!isset(Yii::$app->domain)) {
             $urlData = parse_url(Url::home(true));
-            $this->domain = $urlData['host'];
+            $domain = $urlData['host'];
         } else {
-            $this->domain = Yii::$app->domain;
+            $domain = Yii::$app->domain;
         }
 
         $this->defaultTag = [
-            'title' => $this->title,
+            'title' => $title,
             // 'description' => "",
             // 'keywords' => "",
-            'locale' => $this->language,
+            'locale' => $language,
             'url' => Url::to([], true), // Url::base(true) ,
-            'domain' => $this->domain, // 
-            'site' => "@" . str_replace(' ', '_', ucwords($this->name)),
+            'domain' => $domain, // 
+            'site' => "@" . str_replace(' ', '_', ucwords($name)),
             // 'creator' => '@Denisok1494', // автор статьи
-            'site_name' => ucwords($this->name), // 
+            'site_name' => ucwords($name), // 
             'card' => 'summary_large_image', // summary
             'type' => 'website', //website, profile
         ];
@@ -134,7 +143,7 @@ class MetaTag
      * public function actionView($id) {
      *    $model = $this->findModel($id);
      *    $meta = new MetaTag($this->view, $model->image->url);
-     *    $meta->tag([
+     *    $meta->setTags([
      *        'title' => $model->title,
      *        'description' => substr($model->text, 0, 100),
      *        'keywords' => $model->tagsToString,
@@ -143,7 +152,7 @@ class MetaTag
      * }}
      * ```
      */
-    public function setTag(array $tags)
+    public function setTags(array $tags)
     {
         $newTags = array_merge($this->defaultTag, $tags);
 
@@ -165,6 +174,15 @@ class MetaTag
                 $this->registerTeg("$key", $value);
             };
         }
+    }
+
+    /**
+     * @param array $tags
+     * @deprecated Не актуален, используйте: `setTags()`
+     */
+    public function tag(array $tags)
+    {
+        $this->setTags($tags);
     }
 
     //-----------------------------------------------
@@ -213,15 +231,15 @@ class MetaTag
             'rel' => 'icon', 'type' => "image/$ext", 'href' => Url::to($this->favicon, true)
         ]);
     }
-    
-	/**
-	 * Получить расширение файла
-	 * @param string $file файл,
-	 * @return string
-	 */
-	public static function ext(string $file)
-	{
-		$extension = pathinfo(basename($file), PATHINFO_EXTENSION);
-		return strtolower($extension ?? 'png');
-	}
+
+    /**
+     * Получить расширение файла
+     * @param string $file файл,
+     * @return string
+     */
+    public static function ext(string $file)
+    {
+        $extension = pathinfo(basename($file), PATHINFO_EXTENSION);
+        return strtolower($extension ?? 'png');
+    }
 }
