@@ -1,16 +1,16 @@
 {
     "name": "denisok94/yii-metatag",
-    "description": "Yii2 MetaTag",
-    "keywords": ["yii2-extension", "yii2 MetaTag", "yii2 Meta Tag"],
+    "description": "Generation of Yii2 meta tags.",
+    "keywords": ["yii2-extension", "yii2 MetaTag", "yii2 Meta Tags"],
+    "license": "BSD-3-Clause",
+    "type": "yii2-extension",
     "version": "0.0.1",
     "authors": [{
         "name": "Denisok94",
         "email": "denisok94@inbox.ru"
     }],
     "require": {
-        "yiisoft/yii2": "*"
-    },
-    "require-dev": {
+        "yiisoft/yii2": "~2.0.0"
     },
     "autoload": {
         "psr-4": {

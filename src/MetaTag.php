@@ -115,7 +115,7 @@ class MetaTag
     //-----------------------------------------------
 
     /**
-     * @param array $tags ['name' => 'content', 'name' => 'content', ...]
+     * @param array $tags ['name1' => 'content2', 'name1' => 'content2', ...]
      * 
      * names: 
      * - title - default: `$this->view->title` or `Yii::$app->name`
@@ -143,26 +143,26 @@ class MetaTag
      * }}
      * ```
      */
-    public function tag(array $tags)
+    public function setTag(array $tags)
     {
         $newTags = array_merge($this->defaultTag, $tags);
 
-        $this->setTeg('description', $newTags['description']);
-        $this->setTeg('keywords', $newTags['keywords']);
+        $this->registerTeg('description', $newTags['description']);
+        $this->registerTeg('keywords', $newTags['keywords']);
         unset($newTags['keywords']);
 
         foreach ($newTags as $key => $value) {
             $del = false;
             if ($this->multiNeedleStripos($key, $this->twitterTag) !== false) {
                 $del = true;
-                $this->setTeg("twitter:$key", $value);
+                $this->registerTeg("twitter:$key", $value);
             }
             if ($this->multiNeedleStripos($key, $this->ogTag) !== false) {
                 $del = true;
-                $this->setTeg("og:$key", $value);
+                $this->registerTeg("og:$key", $value);
             }
             if ($del == false) {
-                $this->setTeg("$key", $value);
+                $this->registerTeg("$key", $value);
             };
         }
     }
@@ -196,7 +196,7 @@ class MetaTag
      * @param string $name
      * @param string $content
      */
-    private function setTeg(string $name, string $content)
+    private function registerTeg(string $name, string $content)
     {
         $this->view->registerMetaTag(
             ['property' => $name, 'content' => $content]
