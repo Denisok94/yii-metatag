@@ -1,6 +1,6 @@
 Generation of meta tags.
 
-# Установка
+# Installation
 
 Run:
 
@@ -38,34 +38,8 @@ $config = [
 | setTag | Install MetaTag on the page |
 
 ```php
-use \denisok94\helper\MetaTag;
-```
-
-Указываются в `action` контроллере, перед `render()`.
-```php
-$meta = new MetaTag($this->view);
-$meta->setTag([
-    'nameTag1' => 'valueTag1',
-    'nameTag2' => 'valueTag2',
-    //...
-]);
-
-```
-Установить изображение
-```php
-$meta = new MetaTag($this->view, "/image.jpg");
-```
-Индивидуальная иконка для страницы
-```php
-// Before
-$this->view->registerLinkTag(['rel' => 'icon', 'type' => 'image/png', 'href' => Url::to("/favicon.png", true)]);
-// Since MetaTag
-$meta = new MetaTag($this->view, null, "/favicon.png");
-```
-
-```php
 namespace app\controllers;
-use \denisok94\helper\MetaTag;
+use \denisok94\helper\yii2\MetaTag;
 
 class NewsController extends Controller
 {
@@ -90,4 +64,26 @@ class NewsController extends Controller
         return $this->render('view', ['model' => $model]);
     }
 }
+```
+
+Указываются в `action`, перед `render()`.
+```php
+$meta = new MetaTag($this->view);
+$meta->setTag([
+    'nameTag1' => 'valueTag1',
+    'nameTag2' => 'valueTag2',
+    //...
+]);
+
+```
+Установить изображение
+```php
+$meta = new MetaTag($this->view, "/image.jpg");
+```
+Индивидуальная иконка для страницы
+```php
+// Before
+$this->view->registerLinkTag(['rel' => 'icon', 'type' => 'image/png', 'href' => Url::to("/favicon.png", true)]);
+// Since MetaTag
+$meta = new MetaTag($this->view, null, "/favicon.png");
 ```
