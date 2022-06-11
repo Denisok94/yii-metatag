@@ -1,0 +1,20 @@
+{
+    "name": "denisok94/yii-metatag",
+    "description": "Yii2 MetaTag",
+    "keywords": ["yii2-extension", "yii2 MetaTag", "yii2 Meta Tag"],
+    "version": "0.0.1",
+    "authors": [{
+        "name": "Denisok94",
+        "email": "denisok94@inbox.ru"
+    }],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "denisok94\\helper\\": "src"
+        }
+    }
+}
