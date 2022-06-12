@@ -1,3 +1,5 @@
+<h1 align = "center"> Yii MetaTag Class </h1>
+
 Generation of meta tags.
 
 # Installation
