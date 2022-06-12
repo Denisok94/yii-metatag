@@ -11,10 +11,10 @@
     }],
     "require": {
         "yiisoft/yii2": "~2.0.0",
-        "denisok94/helper-composer": "*"
+        "denisok94/helper-composer": ">0.0.2"
     },
     "conflict": {
-        "denisok94/helper": "<0.7.8"
+        "denisok94/helper": "<0.8.0"
     },
     "autoload": {
         "psr-4": {
