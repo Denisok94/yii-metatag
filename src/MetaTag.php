@@ -72,7 +72,7 @@ class MetaTag
      * @param string|null $favicon ~"/favicon.png" or Url::to($favicon, true);
      * @return self
      */
-    public function __construct(View $view, ?string $image, ?string $favicon)
+    public function __construct(View $view, string $image = null, string $favicon = null)
     {
         $this->image = $image;
         $this->favicon = $favicon;
