@@ -96,8 +96,8 @@ class MetaTag
 
         $this->defaultTag = [
             'title' => $title,
-            // 'description' => "",
-            // 'keywords' => "",
+            'description' => "",
+            'keywords' => "",
             'locale' => $language,
             'url' => Url::to([], true), // Url::base(true) ,
             'domain' => $domain, // 
