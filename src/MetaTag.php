@@ -210,9 +210,9 @@ class MetaTag
 
     /**
      * @param string $name
-     * @param string $content
+     * @param string|null $content
      */
-    private function registerTeg(string $name, string $content)
+    private function registerTeg(string $name, ?string $content)
     {
         $this->view->registerMetaTag(
             ['property' => $name, 'content' => $content]
