@@ -179,7 +179,7 @@ class MetaTag
 
     /**
      * @param array $tags
-     * @deprecated Не актуален, используйте: `setTags()`
+     * @deprecated Not relevant, use: `setTags()`
      */
     public function tag(array $tags)
     {
@@ -234,7 +234,7 @@ class MetaTag
     }
 
     /**
-     * Получить расширение файла
+     * Получить расширение файла / Get the file extension
      * @param string $file файл,
      * @return string
      */

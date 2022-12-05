@@ -1,4 +1,4 @@
-<h1 align = "center"> Yii MetaTag Class </h1>
+<h1 align = "center"> Yii2 MetaTag Class </h1>
 
 Generation of meta tags.
 
@@ -31,6 +31,7 @@ $config = [
     'language' => 'en-EN',
     'basePath' => dirname(__DIR__),
     //...
+];
 ```
 
 # Use
@@ -68,7 +69,7 @@ class NewsController extends Controller
 }
 ```
 
-Указываются в `action`, перед `render()`.
+Specified in `action`, before `render()'.
 ```php
 $meta = new MetaTag($this->view);
 $meta->setTags([
@@ -78,11 +79,11 @@ $meta->setTags([
 ]);
 
 ```
-Установить изображение
+Set Image
 ```php
 $meta = new MetaTag($this->view, "/image.jpg");
 ```
-Индивидуальная иконка для страницы
+Individual icon(favicon) for the page
 ```php
 // Before
 $this->view->registerLinkTag(['rel' => 'icon', 'type' => 'image/png', 'href' => Url::to("/favicon.png", true)]);
