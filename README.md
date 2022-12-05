@@ -33,7 +33,7 @@ $config = [
     //...
 ```
 
-# Using
+# Use
 
 | Method | Description |
 |----------------|:----------------|

@@ -113,6 +113,9 @@ class MetaTag
             $this->defaultTag['image:src'] =  Url::to($this->image, true);
             $this->defaultTag['image:width'] = $width;
             $this->defaultTag['image:height'] = $height;
+        } else if ($this->image) {
+            $this->defaultTag['image'] = $this->image;
+            $this->defaultTag['image:src'] = $this->image;
         }
         if ($this->favicon) {
             $this->setFavicon();
