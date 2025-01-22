@@ -38,7 +38,7 @@ $config = [
 
 | Method | Description |
 |----------------|:----------------|
-| setTags | Install MetaTag on the page |
+| static::tag() | Install MetaTag on the page |
 
 ```php
 namespace app\controllers;
@@ -51,17 +51,23 @@ class NewsController extends Controller
     {
         $model = $this->findModel($id);
         //
-        (new MetaTag($this->view))->setTags([
+        MetaTag::tag($this->view, [
             'title' => $model->title,
             'description' => substr($model->text, 0, 100),
             'keywords' => $model->tags, // string
         ]);
         // or
         $this->view->title = $model->title;
-        $meta = new MetaTag($this->view, $model->image->url);
-        $meta->setTags([
+        list($width, $height, $type, $attr) = getimagesize(Yii::$app->getBasePath() . $model->image_path);
+        MetaTag::tag($this->view, [
+            'title' => $model->title,
             'description' => $model->announce,
             'keywords' => implode(', ', $model->tags), // if tags array
+            'image' => Url::to($model->image_path),
+            'image:src' => Url::to($model->image_path, true),
+            'image:type' => 'image/jpeg',
+            'image:width' => $width,
+            'image:height' => $height,
         ]);
         //
         return $this->render('view', ['model' => $model]);
@@ -71,22 +77,16 @@ class NewsController extends Controller
 
 Specified in `action`, before `render()'.
 ```php
-$meta = new MetaTag($this->view);
-$meta->setTags([
+MetaTag::tag($this->view, [
     'nameTag1' => 'valueTag1',
     'nameTag2' => 'valueTag2',
     //...
 ]);
-
-```
-Set Image
-```php
-$meta = new MetaTag($this->view, "/image.jpg");
 ```
 Individual icon(favicon) for the page
 ```php
 // Before
 $this->view->registerLinkTag(['rel' => 'icon', 'type' => 'image/png', 'href' => Url::to("/favicon.png", true)]);
 // Since MetaTag
-$meta = new MetaTag($this->view, null, "/favicon.png");
+// todo
 ```
