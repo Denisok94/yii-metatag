@@ -21,7 +21,10 @@ class MetaTag
     private mixed $view;
     public int $maxLength = 150;
     private array $defaultTag = [];
-    private string $title = null, $name = null, $language = null, $domain = null;
+    private ?string $title = null;
+    private ?string $name = null;
+    private ?string $language = null;
+    private ?string $domain = null;
     private $init = false;
     private $twitterTag = [
         'title',
