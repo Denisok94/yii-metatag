@@ -1,6 +1,10 @@
 Инструкции по обновлению для Yii MetaTag Class
 =========================================
 
+Upgrade from Helper 0.1.1
+-----------------------
+- mini fixs
+
 Upgrade from Helper 0.1.0
 -----------------------
 - `setTags()` method removed,

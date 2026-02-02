@@ -11,7 +11,7 @@ use yii\helpers\Html;
  * MetaTag Class
  * @method tag tag добавить meta теги на страницу
  * @author Denisok94
- * @version 0.1.0
+ * @version 0.1.1
  * @link https://ogp.me/
  * @link https://ruogp.me/
  * @link https://developers.facebook.com/tools/debug/
@@ -19,12 +19,10 @@ use yii\helpers\Html;
 class MetaTag
 {
     private mixed $view;
-    private $defaultTag,
-        $title,
-        $language,
-        $name,
-        $domain,
-        $init = false;
+    public int $maxLength = 150;
+    private array $defaultTag = [];
+    private string $title = null, $name = null, $language = null, $domain = null;
+    private $init = false;
     private $twitterTag = [
         'title',
         'description',
@@ -56,7 +54,7 @@ class MetaTag
     /**
      *  @param mixed|View $view $this->view
      */
-    function __construct($view)
+    public function __construct($view)
     {
         $this->init($view);
     }
@@ -77,27 +75,31 @@ class MetaTag
         }
         $this->init = true;
 
-        list($width, $height, $type, $attr) = getimagesize(Yii::$app->getBasePath() . "/web/30.jpg");
+        $image = $width = $height = null;
+        // if (file_exists(Yii::$app->getBasePath() . "/web/favicon.ico")) {
+        //     $image = Url::to('favicon.ico', true);
+        //     list($width, $height, $type, $attr) = getimagesize(Yii::$app->getBasePath() . "/web/favicon.ico");
+        // }
 
         $this->defaultTag = [
             'title' => $this->title,
-            'locale' => Yii::$app->language,
-            'description' => "Сайт Дениса.",
-            'keywords' => "Сайт Дениса",
+            'locale' => $this->language,
+            'description' => $this->title,
+            'keywords' => null,
             'url' => Url::to('', true), // Url::base(true) ,
             'domain' => $this->domain, // 
             'site' => "@" . ucwords($this->name),
-            'image' => Url::to('30.jpg', true),
-            'image:src' => Url::to('30.jpg', true),
+            'image' => $image,
+            'image:src' => $image,
             'image:width' => $width,
             'image:height' => $height,
             // 'creator' => '@Denisok1494', // автор статьи
-            'site_name' =>  ucwords($this->name), // 
+            'site_name' => ucwords($this->name), // 
             'card' => 'summary_large_image', // summary
             'type' => 'website', //website, profile
-            'locale' => $this->language,
         ];
     }
+
     /**
      * 
      */
@@ -120,28 +122,39 @@ class MetaTag
 
     /**
      * @param string $name
-     * @param string $content
+     * @param string|null $content
      * @return void
      */
-    private function setTeg(string $name,string $content): void
+    private function setTeg(string $name, ?string $content = null): void
     {
-        $this->view->registerMetaTag(
-            ['property' => $name, 'content' => $content]
-        );
+        if ($content) {
+            $this->view->registerMetaTag(
+                ['property' => $name, 'content' => $content]
+            );
+        }
     }
 
     /**
      * @param array $tags [name => content]
      * name: title, description, keywords, author/creator, image(image:src, image:width, image:height), card: summary/summary_large_image, type: website/profile
      */
-    function tags($tags = [])
+    public function tags($tags = []): void
     {
         $newTags = array_merge($this->defaultTag, $tags);
 
+        if ($newTags['description']) {
+            $newTags['description'] = self::makeMetaDescription($newTags['description'], $this->maxLength);
+        }
         $this->setTeg('description', $newTags['description']);
-        $this->setTeg('keywords', $newTags['keywords']);
+        //
+        if ($newTags['keywords']) {
+            if (is_array($newTags['keywords'])) {
+                $newTags['keywords'] = implode(',', $newTags['keywords']);
+            }
+            $this->setTeg('keywords', $newTags['keywords']);
+        }
         unset($newTags['keywords']);
-
+        //
         foreach ($newTags as $key => $value) {
             $del = false;
             if ($this->multineedle_stripos($key, $this->twitterTag) !== false) {
@@ -154,15 +167,38 @@ class MetaTag
             }
             if ($del == false) {
                 $this->setTeg("$key", $value);
-            };
+            }
         }
+    }
+
+    /**
+     * @param string $text
+     * @param int $maxLength
+     * @return string
+     */
+    private function makeMetaDescription(string $text, int $maxLength = 150): string
+    {
+        $text = strip_tags($text);
+        $text = htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace('/\s+/', ' ', $text);
+        $text = trim($text);
+        if (mb_strlen($text) <= $maxLength) {
+            return $text;
+        }
+        $text = mb_substr($text, 0, $maxLength);
+        $lastSpace = mb_strrpos($text, ' ');
+        if ($lastSpace !== false) {
+            $text = mb_substr($text, 0, $lastSpace);
+        }
+        $text = $text . ' &hellip;';
+        return $text;
     }
 
     /**
      * @param mixed|View $view $this->view
      * @param array $tags [name => content]
      */
-    static function tag($view, $tags = [])
+    public static function tag($view, $tags = [])
     {
         $new = new MetaTag($view);
         $new->tags($tags);

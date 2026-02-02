@@ -63,7 +63,7 @@ class NewsController extends Controller
             'title' => $model->title,
             'description' => $model->announce,
             'keywords' => implode(', ', $model->tags), // if tags array
-            'image' => Url::to($model->image_path),
+            'image' => Url::to($model->image_path, true),
             'image:src' => Url::to($model->image_path, true),
             'image:type' => 'image/jpeg',
             'image:width' => $width,
