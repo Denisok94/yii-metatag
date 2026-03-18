@@ -37,7 +37,7 @@ $config = [
 # Use
 
 | Method | Description |
-|----------------|:----------------|
+| ---------------- | :---------------- |
 | static::tag() | Install MetaTag on the page |
 
 ```php
