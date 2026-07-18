@@ -1,8 +1,8 @@
-<h1 align = "center"> Yii2 MetaTag Class </h1>
+# Yii2 MetaTag Class
 
 Generation of meta tags.
 
-# Installation
+## Installation
 
 Run:
 
@@ -12,19 +12,7 @@ composer require --prefer-dist denisok94/yii-metatag
 php composer.phar require --prefer-dist denisok94/yii-metatag
 ```
 
-or add to the `require` section of your `composer.json` file:
-
-```json
-"denisok94/yii-metatag": "*"
-```
-
-```bash
-composer update
-# or
-php composer.phar update
-```
-
-In the settings (`config`), where the `web.php` files are located or `config.php ` specify the name of the site and the main language
+In the settings (`config`), where the `web.php` files are located or `config.php` specify the name of the site and the main language
 ```php
 $config = [
     'name' => 'Site Name',
@@ -34,11 +22,13 @@ $config = [
 ];
 ```
 
-# Use
+## Use
 
 | Method | Description |
 | ---------------- | :---------------- |
 | static::tag() | Install MetaTag on the page |
+| tags() | Install MetaTag on the page |
+| setFavicon() | change the page icon favicon |
 
 ```php
 namespace app\controllers;
@@ -69,7 +59,12 @@ class NewsController extends Controller
             'image:width' => $width,
             'image:height' => $height,
         ]);
-        //
+        // or
+        $tag = new MetaTag($view);
+        $tag->tags([
+            'title' => $model->title,
+            //....
+        ]);
         return $this->render('view', ['model' => $model]);
     }
 }
@@ -83,10 +78,12 @@ MetaTag::tag($this->view, [
     //...
 ]);
 ```
+
 Individual icon(favicon) for the page
 ```php
 // Before
 $this->view->registerLinkTag(['rel' => 'icon', 'type' => 'image/png', 'href' => Url::to("/favicon.png", true)]);
 // Since MetaTag
-// todo
+$tag = new MetaTag($view);
+$tag->setFavicon("/favicon.png");
 ```

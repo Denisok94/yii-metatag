@@ -9,7 +9,7 @@ use yii\helpers\Html;
 
 /**
  * MetaTag Class
- * @method tag tag добавить meta теги на страницу
+ * @method void tag(View $view, array $tags) добавить meta теги на страницу
  * @author Denisok94
  * @version 0.1.1
  * @link https://ogp.me/
@@ -25,7 +25,6 @@ class MetaTag
     private ?string $name = null;
     private ?string $language = null;
     private ?string $domain = null;
-    private $init = false;
     private $twitterTag = [
         'title',
         'description',
@@ -57,12 +56,108 @@ class MetaTag
     /**
      *  @param mixed|View $view $this->view
      */
-    public function __construct($view)
+    public function __construct(View $view)
     {
         $this->init($view);
     }
 
-    private function init($view)
+    /**
+     * @param mixed|View $view $this->view
+     * @param array $tags ['name1' => 'content2', 'name1' => 'content2', ...]
+     * 
+     * names: 
+     * - title - default: `$this->view->title` or `Yii::$app->name`
+     * - description
+     * - keywords
+     * - author/creator
+     * - image(image:src, image:width, image:height)
+     * - card - summary or summary_large_image - default: `summary_large_image`
+     * - url - default: `Url::to([], true)`
+     * - locale - default: `Yii::$app->language` or `'en-EN'`
+     * - site - default: `Yii::$app->name`
+     * - domain - default: `Yii::$app->domain` or `Url::home(true)`
+     * - type - website or profile - default: `website`.
+     * @example 1:
+     * ```php
+     * class NewsController extends Controller {
+     * public function actionView($id) {
+     *    $model = $this->findModel($id);
+     *    MetaTag::tag($this->view, [
+     *        'title' => $model->title,
+     *        'description' => substr($model->text, 0, 100),
+     *        'keywords' => $model->tagsToString,
+     *    ]);
+     *    return $this->render('view', ['model' => $model]);
+     * }}
+     * ```
+     */
+    public static function tag(View $view, array $tags = [])
+    {
+        $new = new MetaTag($view);
+        $new->tags($tags);
+    }
+
+    /**
+     * @param array $tags ['name1' => 'content2', 'name1' => 'content2', ...]
+     * @return self
+     * name: title, description, keywords, author/creator, image(image:src, image:width, image:height), card: summary/summary_large_image, type: website/profile
+     */
+    public function tags(array $tags = []): self
+    {
+        $newTags = array_merge($this->defaultTag, $tags);
+
+        if ($newTags['description']) {
+            $newTags['description'] = self::makeMetaDescription($newTags['description'], $this->maxLength);
+        }
+        $this->setTeg('description', $newTags['description']);
+        //
+        if ($newTags['keywords']) {
+            if (is_array($newTags['keywords'])) {
+                $newTags['keywords'] = implode(',', $newTags['keywords']);
+            }
+            $this->setTeg('keywords', $newTags['keywords']);
+        }
+        unset($newTags['keywords']);
+        //
+        foreach ($newTags as $key => $value) {
+            $del = false;
+            if ($this->multineedle_stripos($key, $this->twitterTag) !== false) {
+                $del = true;
+                $this->setTeg("twitter:$key", $value);
+            }
+            if ($this->multineedle_stripos($key, $this->ogTag) !== false) {
+                $del = true;
+                $this->setTeg("og:$key", $value);
+            }
+            if ($del == false) {
+                $this->setTeg("$key", $value);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $favicon
+     * @return self
+     */
+    public function setFavicon(string $favicon): self
+    {
+        $ext = self::ext($favicon);
+        $this->view->registerLinkTag([
+            'rel' => 'icon',
+            'type' => "image/$ext",
+            'href' => Url::to($favicon, true)
+        ]);
+        return $this;
+    }
+    
+    //-----------------------------------------------
+
+    /**
+     * @param Yii\web\View $view
+     * @return void
+     */
+    private function init(View $view)
     {
         $this->view = $view;
 
@@ -76,7 +171,6 @@ class MetaTag
         } else {
             $this->domain = Yii::$app->domain;
         }
-        $this->init = true;
 
         $image = $width = $height = null;
         // if (file_exists(Yii::$app->getBasePath() . "/web/favicon.ico")) {
@@ -138,43 +232,6 @@ class MetaTag
     }
 
     /**
-     * @param array $tags [name => content]
-     * name: title, description, keywords, author/creator, image(image:src, image:width, image:height), card: summary/summary_large_image, type: website/profile
-     */
-    public function tags($tags = []): void
-    {
-        $newTags = array_merge($this->defaultTag, $tags);
-
-        if ($newTags['description']) {
-            $newTags['description'] = self::makeMetaDescription($newTags['description'], $this->maxLength);
-        }
-        $this->setTeg('description', $newTags['description']);
-        //
-        if ($newTags['keywords']) {
-            if (is_array($newTags['keywords'])) {
-                $newTags['keywords'] = implode(',', $newTags['keywords']);
-            }
-            $this->setTeg('keywords', $newTags['keywords']);
-        }
-        unset($newTags['keywords']);
-        //
-        foreach ($newTags as $key => $value) {
-            $del = false;
-            if ($this->multineedle_stripos($key, $this->twitterTag) !== false) {
-                $del = true;
-                $this->setTeg("twitter:$key", $value);
-            }
-            if ($this->multineedle_stripos($key, $this->ogTag) !== false) {
-                $del = true;
-                $this->setTeg("og:$key", $value);
-            }
-            if ($del == false) {
-                $this->setTeg("$key", $value);
-            }
-        }
-    }
-
-    /**
      * @param string $text
      * @param int $maxLength
      * @return string
@@ -198,12 +255,13 @@ class MetaTag
     }
 
     /**
-     * @param mixed|View $view $this->view
-     * @param array $tags [name => content]
+     * Получить расширение файла
+     * @param string $file файл,
+     * @return string
      */
-    public static function tag($view, $tags = [])
+    private static function ext(string $file)
     {
-        $new = new MetaTag($view);
-        $new->tags($tags);
+        $extension = pathinfo(basename($file), PATHINFO_EXTENSION);
+        return strtolower($extension ?? 'png');
     }
 }
